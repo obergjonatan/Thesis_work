@@ -13,7 +13,6 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import preprocessor
 
-
 # Autherize twitter api
 
 
@@ -21,6 +20,7 @@ def twitter_auth(cons_key, cons_secret, access_token, access_token_secret):
     auth = tweepy.OAuthHandler(cons_key, cons_secret)
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
+
 
 # Get twitter data from given path
 
@@ -47,6 +47,7 @@ def sample_tweets(data, sample_size):
         previously_sampled.append(str(random_index))
     return sampled_tweets
 
+
 # Takes list of tweetids and returns a list of texts related to those tweetids
 
 # Takes list of tweet_ids and an authorized twitter api and returns a list containing the texts from the given tweet_ids.
@@ -54,14 +55,15 @@ def sample_tweets(data, sample_size):
 
 def get_tweet_texts(tweet_ids):
     tweet_texts = []
-    for i in range(math.ceil(len(tweet_ids)/100)):
-        lower_limit = i*100
-        upper_limit = min(len(tweet_ids)-1, ((i+1)*100-1))
+    for i in range(math.ceil(len(tweet_ids) / 100)):
+        lower_limit = i * 100
+        upper_limit = min(len(tweet_ids) - 1, ((i + 1) * 100 - 1))
         sliced_ids = tweet_ids[lower_limit:upper_limit]
         tweet_data = api.lookup_statuses(sliced_ids)
         for tweet in tweet_data:
             tweet_texts.append(tweet.text)
     return tweet_texts
+
 
 # Gathers tweets from list of tweetids and then does sentiment analysis on tweets and calculates the average sentiment of all tweets
 
@@ -71,7 +73,8 @@ def get_average_sentiment(texts):
     for text in texts:
         pre_processed_text = pre_process_text(text)
         total_sentiment += sia.polarity_scores(pre_processed_text)["compound"]
-    return total_sentiment/len(texts)
+    return total_sentiment / len(texts)
+
 
 # Returns the calculated VADER sentiment for the given string.
 
@@ -80,7 +83,8 @@ def pre_process_text(text: str):
     cleaned_text = preprocessor.clean(text)
     tokenized_text = nltk.word_tokenize(cleaned_text)
     preprocessed_text = [
-        w for w in tokenized_text if not w.lower() in stopwords]
+        w for w in tokenized_text if not w.lower() in stopwords
+    ]
     full_text = ' '.join(preprocessed_text)
     return full_text
 
@@ -89,8 +93,9 @@ def pre_process_text(text: str):
 
 
 def export_sentiment_data(daily_sentiment):
-    csv_file = open("daily_sentiment" + str(start_date) + "-" +
-                    str(start_date + timedelta(days=days_to_check-1)) + ".csv",
+    csv_file = open("/sentiment_data/daily_sentiment" + str(start_date) + "-" +
+                    str(start_date + timedelta(days=days_to_check - 1)) +
+                    ".csv",
                     "w",
                     newline='')
     writer = csv.writer(csv_file)
@@ -141,5 +146,5 @@ for i in range(days_to_check):
     average_sentiment = get_average_sentiment(texts)
     daily_sentiment[str(date)] = average_sentiment
     date = date + timedelta(days=1)
-    print('Analyzed %d/%d days' % ((i+1), int(days_to_check)))
+    print('Analyzed %d/%d days' % ((i + 1), int(days_to_check)))
 export_sentiment_data(daily_sentiment.items())

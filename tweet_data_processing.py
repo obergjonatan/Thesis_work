@@ -29,7 +29,7 @@ for i in range(days_to_check):
 
 print(daily_matches)
 
-csv_file = open("discussed_measures_" + str(start_date) + "-" +
+csv_file = open("/measures_data/discussed_measures_" + str(start_date) + "-" +
                 str(start_date + timedelta(days=days_to_check)) + ".csv",
                 "w",
                 newline='')

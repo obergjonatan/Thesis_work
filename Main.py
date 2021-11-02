@@ -22,7 +22,7 @@ from sklearn import preprocessing
 
 def load_data(data: str, predict_values: str) -> DataFrame:
     merge_data = merge_data_and_predict_value(
-        data+data_path_end, predict_values+predict_path_end)
+        data + data_path_end, predict_values + predict_path_end)
     merge_data.drop(['date'], axis=1, inplace=True)
     nmpy_data = merge_data.to_numpy()
     return nmpy_data
@@ -51,8 +51,7 @@ def get_results(trained_model, X_train, X_test, y_train, y_test):
     test_score = r2_score(y_test, trained_model.predict(X_test))
     train_mae = mean_absolute_error(y_train, trained_model.predict(X_train))
     test_mae = mean_absolute_error(y_test, trained_model.predict(X_test))
-    train_rsme = mean_squared_error(
-        y_train, trained_model.predict(X_train))
+    train_rsme = mean_squared_error(y_train, trained_model.predict(X_train))
     test_rsme = mean_squared_error(y_test, trained_model.predict(X_test))
     return train_score, test_score, train_mae, train_rsme, test_mae, test_rsme
 
@@ -69,22 +68,23 @@ def export_results(filename, results):
     return 0
 
 
-data = ['discussed_measures_',
-        'daily_sentiment_']
+data = [
+    '/measures_data/discussed_measures_', '/sentiment_data/daily_sentiment_'
+]
 
-predict_values = ['new_cases_',
-                  'new_cases_derivative_',
-                  'new_cases_derivative_7_days',
-                  'new_cases_derivative_trailing_moving_mean',
-                  'new_cases_derivative_trailing_moving_mean_7_days',
-                  ]
-
+predict_values = [
+    '/prediction_data/new_cases_',
+    '/prediction_data/new_cases_derivative_',
+    '/prediction_data/new_cases_derivative_7_days',
+    '/prediction_data/new_cases_derivative_trailing_moving_mean',
+    '/prediction_data/new_cases_derivative_trailing_moving_mean_7_days',
+]
 
 start_date = dt.date(2020, 7, 29)
 end_date = dt.date(2021, 1, 25)
 
-data_path_end = str(start_date)+'-'+str(end_date)+'.csv'
-predict_path_end = str(start_date)+'-'+str(end_date)+'_US.csv'
+data_path_end = str(start_date) + '-' + str(end_date) + '.csv'
+predict_path_end = str(start_date) + '-' + str(end_date) + '_US.csv'
 
 used_data = data[0]
 used_predict_values = predict_values[0]
@@ -97,7 +97,6 @@ print(X)
 y = data[:, -1]
 print(y)
 
-
 X_train, X_test, y_train, y_test = train_test_split(X,
                                                     y,
                                                     test_size=0.3,
@@ -107,9 +106,9 @@ scaler = preprocessing.StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-
-lin_model, X_train, X_test, y_train, y_test = optimize(
-    LinearRegression(), X_train, X_test, y_train, y_test)
+lin_model, X_train, X_test, y_train, y_test = optimize(LinearRegression(),
+                                                       X_train, X_test,
+                                                       y_train, y_test)
 lin_results = get_results(lin_model, X_train, X_test, y_train, y_test)
 print('Lin_reg:' + str(lin_results))
 
@@ -122,7 +121,6 @@ lasso_model, X_train, X_test, y_train, y_test = optimize(
     Lasso(), X_train, X_test, y_train, y_test)
 lasso_results = get_results(lasso_model, X_train, X_test, y_train, y_test)
 print('Lasso' + str(lasso_results))
-
 
 #lasso_results = evaluate(Lasso(), X, y)
 #ridge_results = evaluate(Ridge(), X, y)
